@@ -9,12 +9,13 @@ class Home extends BaseController
     {
         helper(['url','form']);
         $this->user = new UserModel();
-        
+
     }
     public function index()
     {
         echo view('inc/header.php');
-        $data['users'] = $this->user->orderBy('id','DESC')->findAll();
+        $data['users'] = $this->user->orderBy('id','DESC')->paginate(3,'group1');
+        $data['pager'] = $this->user->pager;
         echo view('home.php',$data);
         echo view('inc/footer.php');
     }
@@ -24,8 +25,6 @@ class Home extends BaseController
 
         $username = $this->request->getVar("username");
         $email    = $this->request->getVar("email");
-        $address  = $this->request->getVar("address");
-        $phone    = $this->request->getVar("phone");
 
         $this->user->save(["username" => $username,"password" => $email]);
 
@@ -52,5 +51,13 @@ class Home extends BaseController
     public function deleteUser($id){
         $this->user->delete($id);
         echo "deleted";
+    }
+
+    public function deleteMultiUser(){
+        $ids = $this->request->getVar('ids');
+        for($count = 0;$count < count($ids);$count++){
+            $this->user->delete($ids[$count]);
+        }
+        echo "multi deleted";
     }
 }

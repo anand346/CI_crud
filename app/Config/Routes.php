@@ -40,6 +40,7 @@ $routes->post('/saveUser', 'Home::saveUser');
 $routes->post('/updateUser', 'Home::updateUser');
 $routes->get('/getSingleUser/(:num)', 'Home::getSingleUser/$1');
 $routes->post('/deleteUser/(:num)', 'Home::deleteUser/$1');
+$routes->post('/deleteMultiUser', 'Home::deleteMultiUser/$1');
 
 /*
  * --------------------------------------------------------------------

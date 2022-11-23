@@ -29,26 +29,52 @@
         })
     })
 
+	$(document).on("click",".delete_all_data",function(){
+		var checkboxes = $(".data_checkbox:checked");
+		if(checkboxes.length > 0){
+			var ids = [];
+			checkboxes.each(function(){
+				ids.push($(this).val());
+			})
+			$.ajax({
+				url : "<?php echo base_url() ?>"+"/deleteMultiUser",
+				method : "POST",
+				data : {ids : ids},
+				success : function(data){
+					console.log(data);
+					checkboxes.each(function(){
+						$(this).parent().parent().parent().hide(1000);
+					})
+				}
+			})
+		}else{
+			alert("please select any data");
+		}
+	})
+	
+
 </script>
 <div class="container-xl">
-	<div class="table-responsive">
+	<div class="table-responsive d-flex flex-column">
+		<?php
+			if(session()->getFlashdata('success')){
+		?>
+		<div class="alert w-50 align-self-center alert-success alert-dismissible fade show" role="alert">
+			<?php echo session()->getFlashdata('success') ?>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			  <span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<?php } ?>
 		<div class="table-wrapper">
 			<div class="table-title">
 				<div class="row">
-                    <?php
-                        if(session()->getFlashdata('success')){
-                    ?>
-                    <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="btn-close" data-dismiss="alert">&times;</button>
-                        <?php echo session()->getFlashdata('success') ?>
-                    </div>
-                    <?php } ?>
 					<div class="col-sm-6">
-						<h2>Manage <b>Employees</b></h2>
+						<h2>CodeIgniter 4 <b>CRUD</b></h2>
 					</div>
 					<div class="col-sm-6">
 						<a href="#addEmployeeModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Employee</span></a>
-						<a href="#deleteEmployeeModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Delete</span></a>						
+						<a href="#" class="delete_all_data btn btn-danger"><i class="material-icons">&#xE15C;</i> <span>Delete</span></a>						
 					</div>
 				</div>
 			</div>
@@ -75,8 +101,8 @@
                         <input type="hidden" id="userId" name="id" value = "<?php echo $user['id']; ?>" >
 						<td>
 							<span class="custom-checkbox">
-								<input type="checkbox" id="checkbox1" name="options[]" value="1">
-								<label for="checkbox1"></label>
+								<input type="checkbox" id="data_checkbox" class="data_checkbox" name="data_checkbox" value="<?php echo $user['id']; ?>">
+								<label for="data_checkbox"></label>
 							</span>
 						</td>
 						<td><?php echo $user['username']; ?></td>
@@ -89,16 +115,9 @@
                     <?php } } ?>
 				</tbody>
 			</table>
-			<div class="clearfix">
-				<div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
+			<div class="d-flex justify-content-center align-items-center">
 				<ul class="pagination">
-					<li class="page-item disabled"><a href="#">Previous</a></li>
-					<li class="page-item"><a href="#" class="page-link">1</a></li>
-					<li class="page-item"><a href="#" class="page-link">2</a></li>
-					<li class="page-item active"><a href="#" class="page-link">3</a></li>
-					<li class="page-item"><a href="#" class="page-link">4</a></li>
-					<li class="page-item"><a href="#" class="page-link">5</a></li>
-					<li class="page-item"><a href="#" class="page-link">Next</a></li>
+					<?= $pager->links('group1','bs_pagination'); ?>
 				</ul>
 			</div>
 		</div>
@@ -121,15 +140,7 @@
 					<div class="form-group">
 						<label>Email</label>
 						<input type="email" class="form-control" name="email" required>
-					</div>
-					<div class="form-group">
-						<label>Address</label>
-						<textarea class="form-control" name="address" required></textarea>
-					</div>
-					<div class="form-group">
-						<label>Phone</label>
-						<input type="text" class="form-control" name="phone" required>
-					</div>					
+					</div>				
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" name="submit" data-dismiss="modal" value="Cancel">
